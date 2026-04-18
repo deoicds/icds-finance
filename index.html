@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0056b3">
+    <title>ICDS Finance Management System</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+    <link rel="apple-touch-icon" href="icons/icon-152.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="shortcut icon" href="icons/icon-96.png">
+
+    <!-- SEO & Social -->
+    <meta name="description" content="ICDS ફાઇનાન્સ મેનેજમેન્ટ સિસ્ટમ - Finance tracking for Integrated Child Development Services">
+    <meta name="keywords" content="ICDS, Finance, Management, Gujarat, ફાઇનાન્સ">
+    <meta name="author" content="ICDS Finance">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #0056b3;
+            --primary-dark: #003d82;
+            --primary-light: #eef5fb;
+            --white: #ffffff;
+            --border: #cbd5e1;
+            --text: #1e293b;
+            --bg: #f0f4f8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            width: 100vw;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ════════════════════════════════
+           WELCOME SCREEN
+        ════════════════════════════════ */
+        #welcomeScreen {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: linear-gradient(160deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; z-index: 9999;
+            padding: 20px; padding-top: calc(20px + var(--safe-top));
+            padding-bottom: calc(20px + var(--safe-bottom));
+            overflow-y: auto;
+        }
+
+        .welcome-logo {
+            width: 80px; height: 80px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; margin-bottom: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .welcome-title {
+            font-size: 22px; font-weight: 800;
+            line-height: 1.3; margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px; color: #bae6fd;
+            font-weight: 500; margin-bottom: 30px;
+        }
+
+        .enter-btn {
+            background: white; color: var(--primary);
+            padding: 16px 32px; font-size: 17px; font-weight: 700;
+            border-radius: 50px; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            animation: pulse 2s infinite; cursor: pointer;
+            margin-bottom: 12px; width: 100%; max-width: 320px;
+            border: none; display: block;
+        }
+        .enter-btn:active { transform: scale(0.97); }
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+            50% { box-shadow: 0 6px 30px rgba(255,255,255,0.4); }
+        }
+
+        #passwordBox {
+            display: none; width: 100%; max-width: 320px;
+            margin-bottom: 20px;
+        }
+        .pwd-row {
+            display: flex; gap: 8px; align-items: stretch;
+        }
+        #sysPassword {
+            flex: 1; padding: 14px; font-size: 18px;
+            border-radius: 10px; border: 2px solid rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.15); color: white;
+            text-align: center; letter-spacing: 4px; outline: none;
+        }
+        #sysPassword::placeholder { color: rgba(255,255,255,0.6); letter-spacing: 1px; font-size: 14px; }
+        #sysPassword:focus { border-color: #fde047; background: rgba(255,255,255,0.2); }
+        .unlock-btn {
+            padding: 14px 16px; font-size: 15px;
+            background: var(--success); color: white;
+            border: none; border-radius: 10px; cursor: pointer; font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .welcome-note {
+            max-width: 320px; padding: 14px 16px;
+            border-radius: 10px; background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px; line-height: 1.6; text-align: left;
+            margin-top: 10px;
+        }
+        .welcome-note .highlight { color: #fde047; font-weight: bold; font-size: 13px; display: block; margin-top: 6px; }
+
+        /* ════════════════════════════════
+           TOAST
+        ════════════════════════════════ */
+        .toast-msg {
+            visibility: hidden;
+            min-width: 200px; max-width: calc(100vw - 40px);
+            color: white; text-align: center;
+            border-radius: 10px; padding: 14px 20px;
+            position: fixed; z-index: 10005;
+            left: 50%; bottom: calc(80px + var(--safe-bottom));
+            font-size: 14px; font-weight: 600;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+        .toast-msg.show { visibility: visible; animation: toastIn 0.3s, toastOut 0.3s 2.7s forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* ════════════════════════════════
+           MODALS
+        ════════════════════════════════ */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.65);
+            display: none; align-items: flex-end; justify-content: center;
+            z-index: 10000; backdrop-filter: blur(3px);
+        }
+        .modal-box {
+            background: white; width: 100%; max-width: 500px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+            padding-bottom: var(--safe-bottom);
+            max-height: 90vh; overflow-y: auto;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-handle { width: 40px; height: 4px; background: #cbd5e1; border-radius: 2px; margin: 12px auto 0; }
+        .modal-title { padding: 16px 20px; font-size: 18px; font-weight: 700; }
+        .modal-title.danger { background: #fef2f2; color: var(--danger); }
+        .modal-title.warning { background: #fffbeb; color: var(--warning); }
+        .modal-body { padding: 16px 20px; font-size: 15px; line-height: 1.6; color: #334155; }
+        .modal-buttons {
+            display: flex; gap: 10px;
+            padding: 12px 20px 16px; background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+        .modal-buttons .btn { flex: 1; text-align: center; justify-content: center; }
+
+        /* ════════════════════════════════
+           MAIN APP
+        ════════════════════════════════ */
+        #mainApp { display: none; min-height: 100vh; padding-bottom: 70px; }
+
+        /* TOP HEADER */
+        .app-header {
+            background: var(--primary);
+            color: white;
+            padding: 14px 16px;
+            padding-top: calc(14px + var(--safe-top));
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header-title { font-size: 16px; font-weight: 700; flex: 1; }
+        .header-sub { font-size: 12px; color: #bae6fd; }
+        .header-exit-btn {
+            background: rgba(255,255,255,0.2); color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 8px 14px; border-radius: 20px;
+            font-size: 13px; cursor: pointer; font-weight: 600;
+        }
+
+        /* CONTENT AREA */
+        .content { padding: 14px; padding-bottom: 20px; }
+
+        /* PAGE TITLE */
+        .page-title {
+            font-size: 17px; font-weight: 700;
+            color: var(--primary); margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            display: flex;
+            padding-bottom: var(--safe-bottom);
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 8px 2px; cursor: pointer;
+            color: #94a3b8; font-size: 10px; font-weight: 600;
+            border: none; background: none;
+            transition: color 0.2s;
+            gap: 3px;
+        }
+        .nav-item .nav-icon { font-size: 20px; line-height: 1; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active .nav-icon { transform: scale(1.1); }
+        .nav-item:active { opacity: 0.7; }
+
+        /* MORE MENU */
+        .more-menu {
+            position: fixed; bottom: 70px; right: 0; left: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            border-radius: 20px 20px 0 0;
+            padding: 10px 0;
+            z-index: 99;
+            display: none;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+        .more-menu.open { display: block; }
+        .more-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 20px; font-size: 15px; font-weight: 600;
+            cursor: pointer; color: var(--text);
+        }
+        .more-item:active { background: var(--primary-light); }
+        .more-item .mi-icon { font-size: 20px; width: 24px; text-align: center; }
+
+        /* SECTIONS */
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.25s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ════════════════════════════════
+           DASHBOARD CARDS
+        ════════════════════════════════ */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px; margin-bottom: 16px;
+        }
+        .dash-card {
+            background: white; border-radius: 14px;
+            padding: 16px 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            border-top: 4px solid var(--border);
+        }
+        .dash-card.c-blue { border-top-color: #3b82f6; }
+        .dash-card.c-red { border-top-color: var(--danger); }
+        .dash-card.c-green { border-top-color: var(--success); }
+        .dash-card.c-orange { border-top-color: var(--warning); }
+        .dc-label { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .dc-value { font-size: 20px; font-weight: 800; color: var(--text); word-break: break-all; }
+        .dc-sub { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+
+        /* ════════════════════════════════
+           FILTER BAR
+        ════════════════════════════════ */
+        .filter-section {
+            background: white; border-radius: 14px;
+            padding: 14px; margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .filter-title {
+            font-size: 12px; font-weight: 700; color: #64748b;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .filter-row { display: flex; flex-direction: column; gap: 10px; }
+
+        /* ════════════════════════════════
+           FORM STYLES
+        ════════════════════════════════ */
+        .form-card {
+            background: white; border-radius: 14px;
+            padding: 16px; margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .form-card-title {
+            font-size: 14px; font-weight: 700;
+            color: var(--primary); margin-bottom: 12px;
+            padding-bottom: 8px; border-bottom: 1px solid var(--border);
+        }
+        .field { margin-bottom: 12px; }
+        .field label {
+            display: block; font-size: 12px; font-weight: 700;
+            color: #64748b; margin-bottom: 5px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .field input, .field select {
+            width: 100%; padding: 12px 14px;
+            border: 1.5px solid var(--border); border-radius: 10px;
+            font-size: 15px; color: var(--text); outline: none;
+            background: white; appearance: none; -webkit-appearance: none;
+        }
+        .field input:focus, .field select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,86,179,0.1);
+        }
+        .field input[readonly] {
+            background: #f1f5f9; color: #64748b; cursor: default;
+        }
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* ════════════════════════════════
+           BUTTONS
+        ════════════════════════════════ */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 6px; padding: 13px 18px;
+            font-size: 14px; font-weight: 700;
+            border-radius: 10px; border: none; cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+            background: var(--primary); color: white;
+            text-decoration: none;
+        }
+        .btn:active { opacity: 0.8; transform: scale(0.98); }
+        .btn-full { width: 100%; }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .btn-warning { background: var(--warning); }
+        .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+        .btn-sm { padding: 7px 12px; font-size: 12px; border-radius: 8px; }
+        .btn-row { display: flex; gap: 10px; }
+        .btn-row .btn { flex: 1; }
+
+        /* ════════════════════════════════
+           TABLE / LIST CARDS
+        ════════════════════════════════ */
+        .list-card {
+            background: white; border-radius: 12px;
+            padding: 14px 16px; margin-bottom: 10px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            border-left: 4px solid var(--primary);
+        }
+        .list-card.opening-bal { border-left-color: var(--warning); background: #fffbeb; }
+        .lc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .lc-head { font-size: 14px; font-weight: 700; color: var(--text); }
+        .lc-date { font-size: 12px; color: #94a3b8; }
+        .lc-detail { font-size: 13px; color: #64748b; margin-bottom: 8px; line-height: 1.4; }
+        .lc-amounts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+        .lc-pill {
+            font-size: 12px; font-weight: 700; padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .pill-grant { background: #dcfce7; color: #166534; }
+        .pill-exp { background: #fee2e2; color: #991b1b; }
+        .pill-bal-pos { background: #dbeafe; color: #1e40af; }
+        .pill-bal-neg { background: #fee2e2; color: #991b1b; }
+        .lc-actions { display: flex; gap: 8px; }
+
+        /* Summary cards */
+        .summary-card {
+            background: white; border-radius: 12px;
+            padding: 14px 16px; margin-bottom: 10px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+        }
+        .sc-head { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .sc-major { font-size: 12px; color: #64748b; margin-bottom: 10px; }
+        .sc-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .sc-row:last-child { border-bottom: none; font-weight: 700; }
+        .sc-label { color: #64748b; }
+        .sc-val { font-weight: 600; }
+        .sc-progress { height: 6px; background: #f1f5f9; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+        .sc-progress-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.5s; }
+
+        /* Heads table */
+        .head-card {
+            background: white; border-radius: 12px;
+            padding: 14px 16px; margin-bottom: 8px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .head-info { flex: 1; }
+        .head-name { font-size: 14px; font-weight: 700; color: var(--text); }
+        .head-major { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .head-actions { display: flex; gap: 6px; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 40px 20px;
+            color: #94a3b8;
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-text { font-size: 15px; font-weight: 600; }
+        .empty-sub { font-size: 13px; margin-top: 4px; }
+
+        /* Backup section */
+        .backup-info-card {
+            background: white; border-radius: 14px;
+            padding: 16px; margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .bi-title { font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 6px; }
+        .bi-name { font-size: 15px; font-weight: 700; color: var(--primary); word-break: break-all; }
+
+        /* Password section */
+        .pwd-card {
+            background: #fff8f1; border-radius: 14px;
+            padding: 16px; margin-bottom: 12px;
+            border: 1px solid #fed7aa;
+        }
+
+        /* Chip/badge */
+        .badge {
+            display: inline-block; font-size: 11px; font-weight: 700;
+            padding: 3px 8px; border-radius: 20px;
+            background: var(--primary-light); color: var(--primary);
+        }
+
+        /* Scrollable */
+        .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* Section header */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        /* Divider */
+        .divider { border: none; border-top: 1px dashed var(--border); margin: 16px 0; }
+
+        /* Results count */
+        .results-count {
+            font-size: 12px; color: #94a3b8; font-weight: 600;
+            text-align: right; margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toastMessage" class="toast-msg"></div>
+
+<!-- WELCOME SCREEN -->
+<div id="welcomeScreen">
+    <div class="welcome-logo">👶</div>
+    <div class="welcome-title">ICDS Finance<br>Management System</div>
+    <div class="welcome-subtitle">ફાઇનાન્સ મેનેજમેન્ટ સિસ્ટમ</div>
+
+    <button class="enter-btn" id="enterBtn" onclick="showPasswordPrompt()">
+        🔐 સિસ્ટમમાં પ્રવેશ કરો
+    </button>
+
+    <div id="passwordBox">
+        <div class="pwd-row">
+            <input type="password" id="sysPassword" placeholder="પાસવર્ડ દાખલ કરો" onkeyup="if(event.key==='Enter') checkPassword()">
+            <button class="unlock-btn" onclick="checkPassword()">🔓 ઓકે</button>
+        </div>
+    </div>
+
+    <div class="welcome-note">
+        <b>⚠️ નોંધ:</b> નવા ફોન / બ્રાઉઝરમાં જૂનો ડેટા જોવા માટે <b>બેકઅપ ફાઈલ અપલોડ</b> કરવી જરૂરી છે.
+        <span class="highlight" id="welcomeLastBackupName"></span>
+    </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="customConfirmModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div class="modal-title warning">⚠️ ખાતરી કરો</div>
+        <div class="modal-body" id="confirmMessage">શું તમે ખરેખર ડિલીટ કરવા માંગો છો?</div>
+        <div class="modal-buttons">
+            <button class="btn btn-outline" onclick="closeConfirm()">❌ રદ કરો</button>
+            <button class="btn btn-danger" id="confirmYesBtn">✓ હા, ડિલીટ</button>
+        </div>
+    </div>
+</div>
+
+<!-- EXIT MODAL -->
+<div id="exitModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div class="modal-title danger">⚠️ સિસ્ટમ બંધ કરો</div>
+        <div class="modal-body">
+            <div id="unsavedWarning" style="display:none; color:#b45309; background:#fef3c7; padding:12px; border-radius:8px; margin-bottom:12px; font-size:14px; border:1px solid #fcd34d;">
+                📝 ફેરફાર થયો છે. બહાર નીકળતા ઓટો-બેકઅપ થઈ જશે.
+            </div>
+            <div style="background:#f8fafc; border-radius:8px; padding:12px; border:1px solid var(--border);">
+                <div style="font-size:12px; color:#64748b; font-weight:700; margin-bottom:4px;">છેલ્લી બેકઅપ ફાઈલ:</div>
+                <div id="exitLastBackupName" style="font-size:14px; font-weight:700; color:var(--primary); word-break:break-all;">હજુ કોઈ બેકઅપ નથી!</div>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-outline" onclick="closeExitModal()">❌ રહો</button>
+            <button class="btn btn-danger" id="exitConfirmBtn" onclick="confirmExit()">✓ બહાર નીકળો</button>
+        </div>
+    </div>
+</div>
+
+<!-- MORE MENU OVERLAY -->
+<div id="moreMenuOverlay" onclick="closeMoreMenu()" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:98;display:none;background:rgba(0,0,0,0.3);"></div>
+
+<!-- MORE MENU -->
+<div id="moreMenu" class="more-menu">
+    <div class="more-item" onclick="showSection('settings'); closeMoreMenu()"><span class="mi-icon">⚙️</span> હેડ સેટિંગ્સ</div>
+    <div class="more-item" onclick="showSection('password'); closeMoreMenu()"><span class="mi-icon">🔑</span> પાસવર્ડ બદલો</div>
+    <div class="more-item" onclick="showSection('backup'); closeMoreMenu()"><span class="mi-icon">💾</span> બેકઅપ & રિસ્ટોર</div>
+    <div class="more-item" style="color:var(--danger);" onclick="openExitModal(); closeMoreMenu()"><span class="mi-icon">✖️</span> Exit / બહાર નીકળો</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+    <!-- HEADER -->
+    <div class="app-header">
+        <div>
+            <div class="header-title">ICDS Finance</div>
+            <div class="header-sub">ફાઇનાન્સ મેનેજમેન્ટ</div>
+        </div>
+        <button class="header-exit-btn" onclick="openExitModal()">✖ Exit</button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- ════ DASHBOARD ════ -->
+        <div id="dashboard" class="section active">
+            <div class="filter-section">
+                <div class="filter-title">🔍 ફિલ્ટર</div>
+                <div class="filter-row">
+                    <div class="field" style="margin:0">
+                        <label>હેડ</label>
+                        <select id="dashFilterHead" onchange="populateDashMajorHeads()">
+                            <option value="All">બધા હેડ</option>
+                        </select>
+                    </div>
+                    <div class="field" style="margin:0">
+                        <label>Major Head</label>
+                        <select id="dashFilterMajorHead" onchange="calculateDashboardStats()">
+                            <option value="All">બધા</option>
+                        </select>
+                    </div>
+                    <div class="field" style="margin:0">
+                        <label>નાણાકીય વર્ષ</label>
+                        <select id="dashFilterFY" onchange="calculateDashboardStats()">
+                            <option value="All">બધા વર્ષ</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-title">📊 Fund Overview</div>
+
+            <div class="dash-grid">
+                <div class="dash-card c-blue">
+                    <div class="dc-label">કુલ ગ્રાન્ટ</div>
+                    <div class="dc-value" id="dashTotalGrant">₹0</div>
+                    <div class="dc-sub">Op.Bal + નવી ગ્રાન્ટ</div>
+                </div>
+                <div class="dash-card c-red">
+                    <div class="dc-label">કુલ ખર્ચ</div>
+                    <div class="dc-value" id="dashTotalExp">₹0</div>
+                    <div class="dc-sub">Total Expenditure</div>
+                </div>
+                <div class="dash-card c-green">
+                    <div class="dc-label">બચત (Balance)</div>
+                    <div class="dc-value" id="dashBalance">₹0</div>
+                    <div class="dc-sub">Available Fund</div>
+                </div>
+                <div class="dash-card c-orange">
+                    <div class="dc-label">ખર્ચ %</div>
+                    <div class="dc-value" id="dashPercent">0%</div>
+                    <div class="dc-sub">વપરાયેલ ટકા</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════ ENTRY ════ -->
+        <div id="entry" class="section">
+            <div class="page-title" id="formTitle">➕ નવી એન્ટ્રી</div>
+
+            <div class="form-card">
+                <div class="form-card-title">📅 તારીખ & ઓળખ</div>
+                <div class="field">
+                    <label>તારીખ (Date) *</label>
+                    <input type="date" id="date" onchange="calculateFinancialDetails()">
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>Month</label>
+                        <input type="text" id="monthStr" readonly placeholder="Auto">
+                    </div>
+                    <div class="field">
+                        <label>Financial Year</label>
+                        <input type="text" id="fyStr" readonly placeholder="Auto">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Voucher No.</label>
+                    <input type="text" id="voucher" placeholder="વાઉચર નં. દાખલ કરો">
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">💰 હેડ & ગ્રાન્ટ</div>
+                <div class="field">
+                    <label>હેડ પસંદ કરો *</label>
+                    <select id="headSelect" onchange="autoFillMajorHead()">
+                        <option value="">-- હેડ સિલેક્ટ કરો --</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Major Head *</label>
+                    <select id="majorHead">
+                        <option value="">-- પહેલા હેડ પસંદ કરો --</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>વિગત (Details)</label>
+                    <input type="text" id="details" placeholder="વિગત લખો...">
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>ગ્રાન્ટ (Grant ₹)</label>
+                        <input type="number" id="grant" placeholder="0" inputmode="decimal">
+                    </div>
+                    <div class="field">
+                        <label>ખર્ચ (Expenditure ₹)</label>
+                        <input type="number" id="expenditure" placeholder="0" inputmode="decimal">
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-success" id="saveBtn" onclick="saveEntry()">✓ ડેટા સેવ</button>
+                <button class="btn btn-danger" id="cancelEditBtn" onclick="cancelEdit()" style="display:none;">✖ રદ</button>
+            </div>
+        </div>
+
+        <!-- ════ REPORTS ════ -->
+        <div id="reports" class="section">
+            <div class="page-title">📄 ડેટા રિપોર્ટ</div>
+
+            <div class="filter-section">
+                <div class="filter-title">🔍 ફિલ્ટર</div>
+                <div class="filter-row">
+                    <div class="field" style="margin:0">
+                        <label>હેડ</label>
+                        <select id="filterHead" onchange="renderTable()"><option value="All">All Heads</option></select>
+                    </div>
+                    <div class="field" style="margin:0">
+                        <label>નાણાકીય વર્ષ</label>
+                        <select id="filterFY" onchange="renderTable()"><option value="All">All Years</option></select>
+                    </div>
+                    <div class="field" style="margin:0">
+                        <label>Month</label>
+                        <select id="filterMonth" onchange="renderTable()"><option value="All">All Months</option></select>
+                    </div>
+                </div>
+                <div style="margin-top:10px;">
+                    <button class="btn btn-danger btn-full" onclick="exportPDF('reportPrintArea', 'Detailed_Report')">📥 PDF ડાઉનલોડ</button>
+                </div>
+            </div>
+
+            <div id="reportPrintArea" style="background:white; padding:6px; border-radius:12px;">
+                <h3 style="text-align:center; color:#1e293b; display:none; padding:10px;" id="pdfTitleReport">ICDS - ડેટા રિપોર્ટ</h3>
+                <div id="reportListContainer"></div>
+            </div>
+        </div>
+
+        <!-- ════ SUMMARY ════ -->
+        <div id="summary" class="section">
+            <div class="page-title">📈 સમરી રિપોર્ટ</div>
+
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="field" style="margin:0">
+                        <label>નાણાકીય વર્ષ</label>
+                        <select id="summaryFilterFY" onchange="renderSummary()"><option value="All">All Years</option></select>
+                    </div>
+                </div>
+                <div style="margin-top:10px;">
+                    <button class="btn btn-danger btn-full" onclick="exportPDF('summaryPrintArea', 'Summary_Report')">📥 સમરી PDF</button>
+                </div>
+            </div>
+
+            <div id="summaryPrintArea" style="background:white; padding:6px; border-radius:12px;">
+                <h3 style="text-align:center;color:#1e293b;display:none;padding:10px;" id="pdfTitleSummary">ICDS - સમરી</h3>
+                <div id="summaryListContainer"></div>
+            </div>
+        </div>
+
+        <!-- ════ SETTINGS (HEAD) ════ -->
+        <div id="settings" class="section">
+            <div class="page-title">⚙️ હેડ સેટિંગ્સ</div>
+
+            <div class="form-card">
+                <div class="form-card-title" id="headFormTitle">➕ નવો હેડ ઉમેરો</div>
+                <div class="field">
+                    <label>Head Name *</label>
+                    <input type="text" id="newHeadName" placeholder="ઉદા. Salary">
+                </div>
+                <div class="field">
+                    <label>Major Head *</label>
+                    <input type="text" id="newMajorHead" placeholder="ઉદા. 2236/2/79210">
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-success" id="saveHeadBtn" onclick="saveHead()">✓ સેવ</button>
+                    <button class="btn btn-danger" id="cancelHeadEditBtn" onclick="cancelHeadEdit()" style="display:none;">✖ રદ</button>
+                </div>
+            </div>
+
+            <div class="page-title" style="margin-top:4px;">📋 હેડ લિસ્ટ</div>
+            <div id="headsListContainer"></div>
+        </div>
+
+        <!-- ════ PASSWORD ════ -->
+        <div id="password" class="section">
+            <div class="page-title">🔑 પાસવર્ડ બદલો</div>
+            <div style="font-size:13px; color:#64748b; margin-bottom:14px; background:white; padding:12px; border-radius:10px;">
+                ℹ️ ડિફૉલ્ટ પાસવર્ડ: <b>1975</b> — તમે નવો સેટ કરી શકો છો.
+            </div>
+            <div class="pwd-card">
+                <div class="field">
+                    <label>જૂનો પાસવર્ડ</label>
+                    <input type="password" id="oldPwd" placeholder="હાલનો પાસવર્ડ">
+                </div>
+                <div class="field">
+                    <label>નવો પાસવર્ડ</label>
+                    <input type="password" id="newPwd" placeholder="નવો પાસવર્ડ">
+                </div>
+                <div class="field">
+                    <label>નવો પાસવર્ડ ફરી</label>
+                    <input type="password" id="confirmPwd" placeholder="Confirm">
+                </div>
+                <button class="btn btn-warning btn-full" onclick="changePassword()">🔑 પાસવર્ડ બદલો</button>
+            </div>
+        </div>
+
+        <!-- ════ BACKUP ════ -->
+        <div id="backup" class="section">
+            <div class="page-title">💾 Backup & Restore</div>
+
+            <div class="backup-info-card">
+                <div class="bi-title">📁 છેલ્લી બેકઅપ ફાઈલ</div>
+                <div class="bi-name" id="backupLastName">હજુ કોઈ બેકઅપ નથી</div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">💾 ડેટા ડાઉનલોડ (Backup)</div>
+                <p style="font-size:13px; color:#64748b; margin-bottom:12px;">
+                    તમારો બધો ડેટા JSON ફાઈલ તરીકે ડાઉનલોડ થશે.
+                </p>
+                <button class="btn btn-success btn-full" onclick="downloadBackup(false)">💾 Backup ડાઉનલોડ</button>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">📂 ડેટા અપલોડ (Restore)</div>
+                <p style="font-size:13px; color:#64748b; margin-bottom:12px;">
+                    જૂની Backup JSON ફાઈલ અપલોડ કરો.
+                </p>
+                <div class="field">
+                    <label>Backup ફાઈલ પસંદ કરો</label>
+                    <input type="file" id="uploadFile" accept=".json" style="padding:10px; background:white; border:1.5px solid var(--border); border-radius:10px; font-size:14px;">
+                </div>
+                <button class="btn btn-full" onclick="uploadBackup()">📂 Restore ઉpload</button>
+            </div>
+        </div>
+
+    </div><!-- /content -->
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="nav-dashboard" onclick="showSection('dashboard')">
+            <span class="nav-icon">🏠</span>ડેશ
+        </button>
+        <button class="nav-item" id="nav-entry" onclick="showSection('entry')">
+            <span class="nav-icon">➕</span>એન્ટ્રી
+        </button>
+        <button class="nav-item" id="nav-reports" onclick="showSection('reports')">
+            <span class="nav-icon">📄</span>રિપોર્ટ
+        </button>
+        <button class="nav-item" id="nav-summary" onclick="showSection('summary')">
+            <span class="nav-icon">📈</span>સમરી
+        </button>
+        <button class="nav-item" id="nav-more" onclick="toggleMoreMenu()">
+            <span class="nav-icon">⋯</span>વધુ
+        </button>
+    </nav>
+</div>
+
+<script>
+    let dbData = JSON.parse(localStorage.getItem('icds_db_data_v2')) || [];
+    let headsList = JSON.parse(localStorage.getItem('icds_heads_list')) || [];
+    let editingId = null;
+    let editingHeadIndex = null;
+    let oldHeadData = null;
+    let isDataChanged = false;
+    let pendingAction = null;
+    let currentFileHandle = null;
+    let currentBackupDate = "";
+    let currentSection = 'dashboard';
+
+    window.onload = function() {
+        updateHeadDropdowns();
+        updateFYDropdown();
+        updateMonthDropdown();
+        updateBackupInfo();
+    };
+
+    // ── TOAST ──
+    function showToast(msg, isError = false) {
+        let t = document.getElementById("toastMessage");
+        t.innerText = msg;
+        t.style.background = isError ? "#ef4444" : "#10b981";
+        t.className = "toast-msg show";
+        setTimeout(() => { t.className = "toast-msg"; }, 3000);
+    }
+
+    // ── CONFIRM ──
+    function showConfirm(msg, cb) {
+        document.getElementById('confirmMessage').innerText = msg;
+        pendingAction = cb;
+        document.getElementById('customConfirmModal').style.display = 'flex';
+    }
+    function closeConfirm() {
+        document.getElementById('customConfirmModal').style.display = 'none';
+        pendingAction = null;
+    }
+    document.getElementById('confirmYesBtn').onclick = function() {
+        if(pendingAction) pendingAction();
+        closeConfirm();
+    };
+
+    // ── PASSWORD ──
+    function getSystemPassword() { return localStorage.getItem('icds_sys_password') || "1975"; }
+
+    function showPasswordPrompt() {
+        document.getElementById('enterBtn').style.display = 'none';
+        document.getElementById('passwordBox').style.display = 'block';
+        setTimeout(() => document.getElementById('sysPassword').focus(), 100);
+    }
+
+    function checkPassword() {
+        let pwd = document.getElementById('sysPassword').value;
+        if(pwd === getSystemPassword()) {
+            document.getElementById('sysPassword').value = '';
+            enterSystem();
+        } else {
+            showToast("❌ પાસવર્ડ ખોટો છે!", true);
+            document.getElementById('sysPassword').value = '';
+        }
+    }
+
+    function changePassword() {
+        let old = document.getElementById('oldPwd').value;
+        let nw = document.getElementById('newPwd').value;
+        let cf = document.getElementById('confirmPwd').value;
+        if(old !== getSystemPassword()) { showToast("❌ જૂનો પાસવર્ડ ખોટો!", true); return; }
+        if(!nw) { showToast("❌ નવો પાસવર્ડ ખાલી!", true); return; }
+        if(nw !== cf) { showToast("❌ Confirm પાસવર્ડ match નથી!", true); return; }
+        localStorage.setItem('icds_sys_password', nw);
+        document.getElementById('oldPwd').value = '';
+        document.getElementById('newPwd').value = '';
+        document.getElementById('confirmPwd').value = '';
+        showToast("✅ પાસવર્ડ સફળતાપૂર્વક બદલાયો!");
+    }
+
+    // ── ENTER / EXIT SYSTEM ──
+    function enterSystem() {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        populateDashMajorHeads();
+        calculateDashboardStats();
+    }
+
+    function resetWelcomeScreen() {
+        updateBackupInfo();
+        document.getElementById('welcomeScreen').style.display = 'flex';
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('exitModal').style.display = 'none';
+        document.getElementById('enterBtn').style.display = 'block';
+        document.getElementById('passwordBox').style.display = 'none';
+        document.getElementById('sysPassword').value = '';
+    }
+
+    function openExitModal() {
+        updateBackupInfo();
+        if(isDataChanged) {
+            document.getElementById('unsavedWarning').style.display = 'block';
+            document.getElementById('exitConfirmBtn').innerText = "💾 Save & Exit";
+        } else {
+            document.getElementById('unsavedWarning').style.display = 'none';
+            document.getElementById('exitConfirmBtn').innerText = "✓ Exit";
+        }
+        document.getElementById('exitModal').style.display = 'flex';
+    }
+    function closeExitModal() { document.getElementById('exitModal').style.display = 'none'; }
+
+    async function confirmExit() {
+        document.getElementById('exitModal').style.display = 'none';
+        if(isDataChanged) {
+            showToast("💾 Auto-backup...");
+            await downloadBackup(true);
+        }
+        window.close();
+        setTimeout(() => resetWelcomeScreen(), 300);
+    }
+
+    // ── MORE MENU ──
+    function toggleMoreMenu() {
+        let menu = document.getElementById('moreMenu');
+        let overlay = document.getElementById('moreMenuOverlay');
+        let isOpen = menu.classList.contains('open');
+        if(isOpen) { menu.classList.remove('open'); overlay.style.display = 'none'; }
+        else { menu.classList.add('open'); overlay.style.display = 'block'; }
+    }
+    function closeMoreMenu() {
+        document.getElementById('moreMenu').classList.remove('open');
+        document.getElementById('moreMenuOverlay').style.display = 'none';
+        // reset "more" nav
+        document.getElementById('nav-more').classList.remove('active');
+    }
+
+    // ── SECTION NAVIGATION ──
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        currentSection = id;
+
+        // Update bottom nav
+        ['dashboard','entry','reports','summary'].forEach(sec => {
+            let el = document.getElementById('nav-' + sec);
+            if(el) el.classList.toggle('active', sec === id);
+        });
+        let moreActive = ['settings','password','backup'].includes(id);
+        document.getElementById('nav-more').classList.toggle('active', moreActive);
+
+        if(id === 'dashboard') { populateDashMajorHeads(); calculateDashboardStats(); }
+        if(id === 'reports') { updateFYDropdown(); updateMonthDropdown(); renderTable(); }
+        if(id === 'summary') { updateFYDropdown(); renderSummary(); }
+        if(id === 'settings') renderHeadsList();
+        if(id === 'backup') updateBackupInfo();
+
+        // Scroll to top
+        window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    // ── DASHBOARD ──
+    function populateDashMajorHeads() {
+        let sel = document.getElementById('dashFilterHead').value;
+        let mSel = document.getElementById('dashFilterMajorHead');
+        mSel.innerHTML = '<option value="All">બધા</option>';
+        if(sel !== 'All') {
+            let mHeads = headsList.filter(h => h.name === sel).map(h => h.majorHead);
+            [...new Set(mHeads)].forEach(m => { mSel.innerHTML += `<option value="${m}">${m}</option>`; });
+        }
+        calculateDashboardStats();
+    }
+
+    function calculateDashboardStats() {
+        let totalGrant = 0, totalExp = 0, openingBal = 0;
+        let selHead = document.getElementById('dashFilterHead').value;
+        let selMajor = document.getElementById('dashFilterMajorHead').value;
+        let selFY = document.getElementById('dashFilterFY').value;
+
+        dbData.forEach(row => {
+            let hMatch = (selHead === 'All' || row.headName === selHead);
+            let mMatch = (selMajor === 'All' || row.majorHead === selMajor);
+            if(hMatch && mMatch) {
+                if(selFY === 'All') {
+                    totalGrant += row.grant || 0;
+                    totalExp += row.expenditure || 0;
+                } else {
+                    if(row.fy < selFY) {
+                        openingBal += (row.grant || 0) - (row.expenditure || 0);
+                    } else if(row.fy === selFY) {
+                        totalGrant += row.grant || 0;
+                        totalExp += row.expenditure || 0;
+                    }
+                }
+            }
+        });
+
+        let final = totalGrant + openingBal;
+        let balance = final - totalExp;
+        let pct = final > 0 ? ((totalExp / final) * 100).toFixed(1) : 0;
+
+        document.getElementById('dashTotalGrant').innerText = "₹" + final.toLocaleString('en-IN');
+        document.getElementById('dashTotalExp').innerText = "₹" + totalExp.toLocaleString('en-IN');
+        document.getElementById('dashBalance').innerText = "₹" + balance.toLocaleString('en-IN');
+        document.getElementById('dashPercent').innerText = pct + "%";
+        document.getElementById('dashBalance').style.color = balance < 0 ? '#ef4444' : 'inherit';
+    }
+
+    // ── HEADS ──
+    function updateHeadDropdowns() {
+        let uniqueHeads = [...new Set(headsList.map(h => h.name))];
+        let eSelect = document.getElementById('headSelect');
+        let fSelect = document.getElementById('filterHead');
+        let dashSelect = document.getElementById('dashFilterHead');
+        let curDash = dashSelect.value;
+
+        eSelect.innerHTML = '<option value="">-- હેડ સિલેક્ટ કરો --</option>';
+        fSelect.innerHTML = '<option value="All">All Heads</option>';
+        dashSelect.innerHTML = '<option value="All">બધા હેડ</option>';
+
+        uniqueHeads.forEach(h => {
+            eSelect.innerHTML += `<option value="${h}">${h}</option>`;
+            fSelect.innerHTML += `<option value="${h}">${h}</option>`;
+            dashSelect.innerHTML += `<option value="${h}">${h}</option>`;
+        });
+        if(uniqueHeads.includes(curDash)) dashSelect.value = curDash;
+        renderHeadsList();
+    }
+
+    function renderHeadsList() {
+        let container = document.getElementById('headsListContainer');
+        if(!container) return;
+        container.innerHTML = '';
+        if(headsList.length === 0) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">કોઈ હેડ નથી</div><div class="empty-sub">ઉપર નવો હેડ ઉમેરો</div></div>`;
+            return;
+        }
+        headsList.forEach((h, i) => {
+            container.innerHTML += `
+                <div class="head-card">
+                    <div class="head-info">
+                        <div class="head-name">${h.name}</div>
+                        <div class="head-major">${h.majorHead}</div>
+                    </div>
+                    <div class="head-actions">
+                        <button class="btn btn-warning btn-sm" onclick="editHead(${i})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteHead(${i})">Del</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function editHead(index) {
+        editingHeadIndex = index;
+        oldHeadData = {...headsList[index]};
+        document.getElementById('newHeadName').value = headsList[index].name;
+        document.getElementById('newMajorHead').value = headsList[index].majorHead;
+        document.getElementById('headFormTitle').innerText = "✏️ હેડ સુધારો";
+        document.getElementById('saveHeadBtn').innerHTML = "🔄 Update";
+        document.getElementById('saveHeadBtn').style.background = "#f59e0b";
+        document.getElementById('cancelHeadEditBtn').style.display = 'inline-flex';
+        window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function cancelHeadEdit() {
+        editingHeadIndex = null; oldHeadData = null;
+        document.getElementById('newHeadName').value = '';
+        document.getElementById('newMajorHead').value = '';
+        document.getElementById('headFormTitle').innerText = "➕ નવો હેડ ઉમેરો";
+        document.getElementById('saveHeadBtn').innerHTML = "✓ સેવ";
+        document.getElementById('saveHeadBtn').style.background = "#10b981";
+        document.getElementById('cancelHeadEditBtn').style.display = 'none';
+    }
+
+    function saveHead() {
+        let hName = document.getElementById('newHeadName').value.trim();
+        let mHead = document.getElementById('newMajorHead').value.trim();
+        if(!hName || !mHead) { showToast("❌ બંને field ભરો!", true); return; }
+        isDataChanged = true;
+
+        if(editingHeadIndex !== null) {
+            let exists = headsList.some((h,i) => i !== editingHeadIndex && h.name.toLowerCase()===hName.toLowerCase() && h.majorHead.toLowerCase()===mHead.toLowerCase());
+            if(exists) { showToast("❌ આ જોડ already ઉમેરેલી!", true); return; }
+            dbData.forEach(row => {
+                if(row.headName===oldHeadData.name && row.majorHead===oldHeadData.majorHead) {
+                    row.headName = hName; row.majorHead = mHead;
+                }
+            });
+            localStorage.setItem('icds_db_data_v2', JSON.stringify(dbData));
+            headsList[editingHeadIndex] = {name:hName, majorHead:mHead};
+            showToast("✅ હેડ અપડેટ!");
+            cancelHeadEdit();
+        } else {
+            if(headsList.some(h => h.name.toLowerCase()===hName.toLowerCase() && h.majorHead.toLowerCase()===mHead.toLowerCase())) {
+                showToast("❌ already ઉમેરેલ!", true); return;
+            }
+            headsList.push({name:hName, majorHead:mHead});
+            showToast("✅ નવો હેડ ઉમેરાયો!");
+            document.getElementById('newHeadName').value = '';
+            document.getElementById('newMajorHead').value = '';
+        }
+        localStorage.setItem('icds_heads_list', JSON.stringify(headsList));
+        updateHeadDropdowns();
+    }
+
+    function deleteHead(index) {
+        showConfirm(`"${headsList[index].name}" ડિલીટ કરવો? (એન્ટ્રી ડિલીટ નહિ થાય)`, function() {
+            headsList.splice(index, 1);
+            localStorage.setItem('icds_heads_list', JSON.stringify(headsList));
+            isDataChanged = true;
+            updateHeadDropdowns();
+            showToast("✅ હેડ ડિલીટ!");
+        });
+    }
+
+    // ── ENTRY FORM ──
+    function autoFillMajorHead() {
+        let sel = document.getElementById('headSelect').value;
+        let mSel = document.getElementById('majorHead');
+        mSel.innerHTML = '';
+        if(!sel) { mSel.innerHTML = '<option value="">-- પહેલા હેડ --</option>'; return; }
+        let mHeads = headsList.filter(h => h.name===sel).map(h => h.majorHead);
+        if(mHeads.length === 1) {
+            mSel.innerHTML = `<option value="${mHeads[0]}" selected>${mHeads[0]}</option>`;
+        } else if(mHeads.length > 1) {
+            mSel.innerHTML = '<option value="">-- Major Head --</option>';
+            mHeads.forEach(m => { mSel.innerHTML += `<option value="${m}">${m}</option>`; });
+        } else {
+            mSel.innerHTML = '<option value="">-- Major Head --</option>';
+        }
+    }
+
+    function calculateFinancialDetails() {
+        let val = document.getElementById('date').value;
+        if(!val) { document.getElementById('monthStr').value = ''; document.getElementById('fyStr').value = ''; return; }
+        let d = new Date(val);
+        let y = d.getFullYear(), m = d.getMonth();
+        const mn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        document.getElementById('monthStr').value = `${mn[m]}-${String(y).slice(-2)}`;
+        document.getElementById('fyStr').value = m < 3 ? `${y-1}-${y}` : `${y}-${y+1}`;
+    }
+
+    function saveEntry() {
+        let entry = {
+            date: document.getElementById('date').value,
+            monthStr: document.getElementById('monthStr').value,
+            fy: document.getElementById('fyStr').value,
+            voucher: document.getElementById('voucher').value,
+            headName: document.getElementById('headSelect').value,
+            majorHead: document.getElementById('majorHead').value,
+            details: document.getElementById('details').value,
+            grant: parseFloat(document.getElementById('grant').value) || 0,
+            expenditure: parseFloat(document.getElementById('expenditure').value) || 0
+        };
+        if(!entry.date || !entry.headName || !entry.majorHead) {
+            showToast("❌ તારીખ, Head, MajorHead ફ્રરિ!!", true); return;
+        }
+        isDataChanged = true;
+        if(editingId) {
+            let idx = dbData.findIndex(r => r.timestamp === editingId);
+            if(idx !== -1) { entry.timestamp = editingId; dbData[idx] = entry; }
+            showToast("✅ એન્ટ્રી અપડેટ!");
+            cancelEdit();
+        } else {
+            entry.timestamp = Date.now();
+            dbData.push(entry);
+            showToast("✅ ડેટા સેવ!");
+            clearForm();
+        }
+        dbData.sort((a,b) => new Date(a.date) - new Date(b.date));
+        localStorage.setItem('icds_db_data_v2', JSON.stringify(dbData));
+        updateFYDropdown(); updateMonthDropdown(); populateDashMajorHeads();
+    }
+
+    function clearForm() {
+        ['date','monthStr','fyStr','voucher','details','grant','expenditure'].forEach(id => { document.getElementById(id).value = ''; });
+        document.getElementById('headSelect').value = '';
+        document.getElementById('majorHead').innerHTML = '<option value="">-- પહેલા હેડ --</option>';
+    }
+
+    function editEntry(id) {
+        let entry = dbData.find(r => r.timestamp === id);
+        if(!entry) return;
+        editingId = id;
+        document.getElementById('date').value = entry.date;
+        document.getElementById('monthStr').value = entry.monthStr;
+        document.getElementById('fyStr').value = entry.fy;
+        document.getElementById('voucher').value = entry.voucher;
+        document.getElementById('headSelect').value = entry.headName;
+        autoFillMajorHead();
+        document.getElementById('majorHead').value = entry.majorHead;
+        document.getElementById('details').value = entry.details;
+        document.getElementById('grant').value = entry.grant || '';
+        document.getElementById('expenditure').value = entry.expenditure || '';
+        document.getElementById('formTitle').innerText = "✏️ એન્ટ્રી Edit";
+        document.getElementById('saveBtn').innerHTML = "🔄 Update";
+        document.getElementById('saveBtn').style.background = "#f59e0b";
+        document.getElementById('cancelEditBtn').style.display = 'inline-flex';
+        showSection('entry');
+    }
+
+    function cancelEdit() {
+        editingId = null; clearForm();
+        document.getElementById('formTitle').innerText = "➕ નવી એન્ટ્રી";
+        document.getElementById('saveBtn').innerHTML = "✓ ડેટા સેવ";
+        document.getElementById('saveBtn').style.background = "#10b981";
+        document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    function deleteEntry(id) {
+        showConfirm("આ એન્ટ્રી ડિલીટ? (પાછી નહિ આવે)", function() {
+            dbData = dbData.filter(r => r.timestamp !== id);
+            localStorage.setItem('icds_db_data_v2', JSON.stringify(dbData));
+            isDataChanged = true;
+            updateFYDropdown(); updateMonthDropdown(); renderTable(); populateDashMajorHeads();
+            showToast("✅ ડિલીટ!");
+        });
+    }
+
+    // ── DROPDOWNS ──
+    function updateFYDropdown() {
+        let fySet = new Set();
+        dbData.forEach(r => { if(r.fy) fySet.add(r.fy); });
+        let sorted = Array.from(fySet).sort();
+        ['filterFY','dashFilterFY','summaryFilterFY'].forEach(id => {
+            let el = document.getElementById(id);
+            if(!el) return;
+            let cur = el.value;
+            el.innerHTML = '<option value="All">All Years</option>';
+            sorted.forEach(fy => { el.innerHTML += `<option value="${fy}">${fy}</option>`; });
+            if(fySet.has(cur)) el.value = cur;
+        });
+    }
+
+    function updateMonthDropdown() {
+        let mSet = new Set();
+        dbData.forEach(r => { if(r.monthStr) mSet.add(r.monthStr); });
+        let el = document.getElementById('filterMonth');
+        let cur = el.value;
+        el.innerHTML = '<option value="All">All Months</option>';
+        Array.from(mSet).forEach(m => { el.innerHTML += `<option value="${m}">${m}</option>`; });
+        if(mSet.has(cur)) el.value = cur;
+    }
+
+    // ── RENDER TABLE (as cards) ──
+    function renderTable() {
+        let fHead = document.getElementById('filterHead').value;
+        let fFY = document.getElementById('filterFY').value;
+        let fMonth = document.getElementById('filterMonth').value;
+        let container = document.getElementById('reportListContainer');
+        container.innerHTML = '';
+
+        let runBal = {};
+        let rows = [];
+
+        // Opening balance row
+        if(fFY !== 'All') {
+            dbData.forEach(row => {
+                if(row.fy < fFY) {
+                    let k = row.headName + "_" + row.majorHead;
+                    if(!runBal[k]) runBal[k] = 0;
+                    runBal[k] += (row.grant||0) - (row.expenditure||0);
+                }
+            });
+            if(fHead !== 'All') {
+                for(let k in runBal) {
+                    if(k.startsWith(fHead + "_") && runBal[k] !== 0) {
+                        let mHead = k.split("_")[1];
+                        rows.push({_isOpening: true, headName: fHead, majorHead: mHead, fy: fFY, opBal: runBal[k]});
+                    }
+                }
+            }
+        }
+
+        dbData.forEach(row => {
+            let matchH = (fHead === 'All' || row.headName === fHead);
+            let matchF = (fFY === 'All' || row.fy === fFY);
+            let matchM = (fMonth === 'All' || row.monthStr === fMonth);
+            if(matchH && matchF && matchM) {
+                let k = row.headName + "_" + row.majorHead;
+                if(!runBal[k]) runBal[k] = 0;
+                runBal[k] += (row.grant||0) - (row.expenditure||0);
+                rows.push({...row, _runBal: runBal[k]});
+            }
+        });
+
+        if(rows.length === 0) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">📄</div><div class="empty-text">કોઈ ડેટા નથી</div><div class="empty-sub">ફિલ્ટર બદલો અથવા નવી એન્ટ્રી ઉમેરો</div></div>`;
+            return;
+        }
+
+        container.innerHTML = `<div class="results-count">${rows.length} records</div>`;
+
+        rows.forEach(row => {
+            if(row._isOpening) {
+                container.innerHTML += `
+                    <div class="list-card opening-bal">
+                        <div class="lc-top">
+                            <div class="lc-head">📊 ${row.headName}</div>
+                            <span class="badge">Opening Balance</span>
+                        </div>
+                        <div class="lc-detail">FY: ${row.fy} | ${row.majorHead}</div>
+                        <div class="lc-amounts">
+                            <span class="lc-pill ${row.opBal < 0 ? 'pill-bal-neg':'pill-bal-pos'}">Bal: ₹${row.opBal.toLocaleString('en-IN')}</span>
+                        </div>
+                    </div>`;
+            } else {
+                let balColor = row._runBal < 0 ? 'pill-bal-neg' : 'pill-bal-pos';
+                container.innerHTML += `
+                    <div class="list-card">
+                        <div class="lc-top">
+                            <div class="lc-head">${row.headName}</div>
+                            <div class="lc-date">${row.date}</div>
+                        </div>
+                        <div class="lc-detail">
+                            📁 ${row.majorHead} &nbsp;|&nbsp; 🗓 ${row.monthStr} &nbsp;|&nbsp; 📄 ${row.voucher||'-'}
+                            ${row.details ? `<br>📝 ${row.details}` : ''}
+                        </div>
+                        <div class="lc-amounts">
+                            ${row.grant ? `<span class="lc-pill pill-grant">G: ₹${row.grant.toLocaleString('en-IN')}</span>` : ''}
+                            ${row.expenditure ? `<span class="lc-pill pill-exp">E: ₹${row.expenditure.toLocaleString('en-IN')}</span>` : ''}
+                            <span class="lc-pill ${balColor}">Bal: ₹${row._runBal.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div class="lc-actions">
+                            <button class="btn btn-warning btn-sm" onclick="editEntry(${row.timestamp})">✏️ Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteEntry(${row.timestamp})">🗑 Del</button>
+                        </div>
+                    </div>`;
+            }
+        });
+    }
+
+    // ── RENDER SUMMARY ──
+    function renderSummary() {
+        let container = document.getElementById('summaryListContainer');
+        container.innerHTML = '';
+        let fFY = document.getElementById('summaryFilterFY').value;
+        let summaryData = {};
+
+        dbData.forEach(row => {
+            let k = row.headName + " | " + row.majorHead;
+            if(!summaryData[k]) summaryData[k] = {headName:row.headName, majorHead:row.majorHead, openingBal:0, currentGrant:0, currentExp:0};
+            if(fFY === 'All') {
+                summaryData[k].currentGrant += row.grant || 0;
+                summaryData[k].currentExp += row.expenditure || 0;
+            } else {
+                if(row.fy < fFY) { summaryData[k].openingBal += (row.grant||0) - (row.expenditure||0); }
+                else if(row.fy === fFY) { summaryData[k].currentGrant += row.grant||0; summaryData[k].currentExp += row.expenditure||0; }
+            }
+        });
+
+        let keys = Object.keys(summaryData);
+        if(keys.length === 0) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-text">કોઈ data નથી</div></div>`;
+            return;
+        }
+
+        keys.forEach(k => {
+            let d = summaryData[k];
+            if(fFY !== 'All' && d.openingBal===0 && d.currentGrant===0 && d.currentExp===0) return;
+            let total = d.openingBal + d.currentGrant;
+            let bal = total - d.currentExp;
+            let pct = total > 0 ? ((d.currentExp/total)*100).toFixed(1) : 0;
+            let balColor = bal < 0 ? '#ef4444' : '#10b981';
+            container.innerHTML += `
+                <div class="summary-card">
+                    <div class="sc-head">${d.headName}</div>
+                    <div class="sc-major">📁 ${d.majorHead}</div>
+                    <div class="sc-row"><span class="sc-label">Opening Balance</span><span class="sc-val" style="color:#b45309">₹${d.openingBal.toLocaleString('en-IN')}</span></div>
+                    <div class="sc-row"><span class="sc-label">New Grant</span><span class="sc-val" style="color:#0284c7">₹${d.currentGrant.toLocaleString('en-IN')}</span></div>
+                    <div class="sc-row"><span class="sc-label">Total Fund</span><span class="sc-val">₹${total.toLocaleString('en-IN')}</span></div>
+                    <div class="sc-row"><span class="sc-label">Expenditure</span><span class="sc-val" style="color:var(--danger)">₹${d.currentExp.toLocaleString('en-IN')}</span></div>
+                    <div class="sc-row"><span class="sc-label">Balance</span><span class="sc-val" style="color:${balColor}">₹${bal.toLocaleString('en-IN')}</span></div>
+                    <div style="font-size:12px;color:#64748b;margin-top:8px;font-weight:600;">ઉpayog: ${pct}%</div>
+                    <div class="sc-progress"><div class="sc-progress-fill" style="width:${Math.min(pct,100)}%; background:${pct>90?'#ef4444':pct>70?'#f59e0b':'#10b981'}"></div></div>
+                </div>`;
+        });
+    }
+
+    // ── BACKUP ──
+    function updateBackupInfo() {
+        let name = localStorage.getItem('icds_last_backup_name');
+        let display = name || "હજુ કોઈ બેકઅપ નથી";
+        let el = document.getElementById('backupLastName');
+        let wEl = document.getElementById('welcomeLastBackupName');
+        let eEl = document.getElementById('exitLastBackupName');
+        if(el) el.innerText = display;
+        if(wEl) wEl.innerHTML = name ? `(છેલ્લી: ${name})` : "(આ browser માં backup નથી)";
+        if(eEl) eEl.innerText = display;
+    }
+
+    async function downloadBackup(isAuto = false) {
+        let exportData = {heads: headsList, entries: dbData};
+        let dataStr = JSON.stringify(exportData);
+        let d = new Date();
+        let day = String(d.getDate()).padStart(2,'0');
+        let mon = String(d.getMonth()+1).padStart(2,'0');
+        let yr = String(d.getFullYear()).slice(-2);
+        let fname = `ICDS_Backup_${day}_${mon}_${yr}.json`;
+
+        if(window.showSaveFilePicker) {
+            try {
+                if(!currentFileHandle || currentBackupDate !== `${day}_${mon}_${yr}`) {
+                    currentFileHandle = await window.showSaveFilePicker({
+                        suggestedName: fname,
+                        types: [{description:'JSON Backup', accept:{'application/json':['.json']}}]
+                    });
+                    currentBackupDate = `${day}_${mon}_${yr}`;
+                }
+                const w = await currentFileHandle.createWritable();
+                await w.write(dataStr); await w.close();
+                isDataChanged = false;
+                fname = currentFileHandle.name;
+                if(!isAuto) showToast("✅ Backup ઓવરરાઈટ!");
+            } catch(e) { return; }
+        } else {
+            let uri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            let a = document.createElement('a');
+            a.href = uri; a.download = fname; a.click();
+            isDataChanged = false;
+            if(!isAuto) showToast("✅ Backup ડાઉનલોડ!");
+        }
+        localStorage.setItem('icds_last_backup_name', fname);
+        updateBackupInfo();
+    }
+
+    function uploadBackup() {
+        let file = document.getElementById('uploadFile').files[0];
+        if(!file) { showToast("❌ ફાઈલ select કરો!", true); return; }
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let data = JSON.parse(e.target.result);
+                if(data.entries && data.heads) {
+                    dbData = data.entries;
+                    headsList = data.heads;
+                    localStorage.setItem('icds_db_data_v2', JSON.stringify(dbData));
+                    localStorage.setItem('icds_heads_list', JSON.stringify(headsList));
+                    localStorage.setItem('icds_last_backup_name', file.name);
+                    currentFileHandle = null;
+                    updateHeadDropdowns(); updateFYDropdown(); updateMonthDropdown();
+                    populateDashMajorHeads(); updateBackupInfo();
+                    showSection('dashboard');
+                    showToast("✅ ડેટા restore!");
+                } else { showToast("❌ ફાઈલ ખોટી format!", true); }
+            } catch(err) { showToast("❌ ફાઈલ read error!", true); }
+        };
+        reader.readAsText(file);
+    }
+
+    // ── PDF EXPORT ──
+    function exportPDF(elementId, baseFileName) {
+        let titleId = elementId === 'reportPrintArea' ? 'pdfTitleReport' : 'pdfTitleSummary';
+        let titleEl = document.getElementById(titleId);
+        let fname = baseFileName;
+
+        // Build proper table HTML for PDF
+        let tableHtml = '';
+        if(elementId === 'reportPrintArea') {
+            let fH = document.getElementById('filterHead').value;
+            let fM = document.getElementById('filterMonth').value;
+            let fF = document.getElementById('filterFY').value;
+            let title = "ICDS - ";
+            let sfx = "";
+            if(fH !== 'All'){title+=fH+" "; sfx+="_"+fH;} else title+="All ";
+            if(fM !== 'All' && fF !== 'All'){title+=`(${fM}, ${fF})`; sfx+=`_${fM}_${fF}`;}
+            else if(fM !== 'All'){title+=`(${fM})`; sfx+="_"+fM;}
+            else if(fF !== 'All'){title+=`(FY:${fF})`; sfx+="_"+fF;}
+            titleEl.innerText = title;
+            fname = "ICDS_Report"+sfx;
+
+            let fHead = fH, fFY = fF, fMonth = fM;
+            let runBal = {};
+            let rowsHTML = '';
+
+            if(fFY !== 'All') {
+                dbData.forEach(row => {
+                    if(row.fy < fFY) { let k=row.headName+"_"+row.majorHead; if(!runBal[k])runBal[k]=0; runBal[k]+=(row.grant||0)-(row.expenditure||0); }
+                });
+                if(fHead !== 'All') {
+                    for(let k in runBal) {
+                        if(k.startsWith(fHead+"_") && runBal[k]!==0) {
+                            let mH=k.split("_")[1];
+                            rowsHTML += `<tr style="background:#ffedd5"><td>-</td><td>-</td><td>${fFY}</td><td>-</td><td>${fHead}</td><td>${mH}</td><td><b>Opening Balance</b></td><td>${runBal[k]>0?runBal[k]:0}</td><td>${runBal[k]<0?Math.abs(runBal[k]):0}</td><td style="color:${runBal[k]<0?'red':'green'}">${runBal[k]}</td></tr>`;
+                        }
+                    }
+                }
+            }
+            dbData.forEach(row => {
+                let mH=(fHead==='All'||row.headName===fHead), mF=(fFY==='All'||row.fy===fFY), mM=(fMonth==='All'||row.monthStr===fMonth);
+                if(mH&&mF&&mM){
+                    let k=row.headName+"_"+row.majorHead; if(!runBal[k])runBal[k]=0; runBal[k]+=(row.grant||0)-(row.expenditure||0);
+                    rowsHTML += `<tr><td>${row.date}</td><td>${row.monthStr}</td><td>${row.fy}</td><td>${row.voucher||''}</td><td>${row.headName}</td><td>${row.majorHead}</td><td>${row.details||''}</td><td>${row.grant||0}</td><td>${row.expenditure||0}</td><td style="color:${runBal[k]<0?'red':'green'}">${runBal[k]}</td></tr>`;
+                }
+            });
+            tableHtml = `<table border="1" style="border-collapse:collapse;width:100%;font-size:12px;"><thead><tr style="background:#0056b3;color:white"><th>Date</th><th>Month</th><th>FY</th><th>Voucher</th><th>Head</th><th>Major Head</th><th>Details</th><th>Grant</th><th>Exp</th><th>Balance</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
+        } else {
+            let fFY = document.getElementById('summaryFilterFY').value;
+            titleEl.innerText = fFY !== 'All' ? `ICDS - Summary (FY:${fFY})` : 'ICDS - Summary Report';
+            fname += fFY !== 'All' ? "_"+fFY : "";
+            let summaryData = {};
+            dbData.forEach(row => {
+                let k=row.headName+" | "+row.majorHead;
+                if(!summaryData[k]) summaryData[k]={headName:row.headName,majorHead:row.majorHead,openingBal:0,currentGrant:0,currentExp:0};
+                if(fFY==='All'){summaryData[k].currentGrant+=row.grant||0;summaryData[k].currentExp+=row.expenditure||0;}
+                else{if(row.fy<fFY)summaryData[k].openingBal+=(row.grant||0)-(row.expenditure||0);else if(row.fy===fFY){summaryData[k].currentGrant+=row.grant||0;summaryData[k].currentExp+=row.expenditure||0;}}
+            });
+            let rowsHTML = '';
+            for(let[k,d] of Object.entries(summaryData)){
+                let tot=d.openingBal+d.currentGrant, bal=tot-d.currentExp, pct=tot>0?((d.currentExp/tot)*100).toFixed(1):0;
+                rowsHTML+=`<tr><td>${d.headName}</td><td>${d.majorHead}</td><td>${d.openingBal}</td><td>${d.currentGrant}</td><td>${tot}</td><td>${d.currentExp}</td><td style="color:${bal<0?'red':'green'}">${bal}</td><td>${pct}%</td></tr>`;
+            }
+            tableHtml = `<table border="1" style="border-collapse:collapse;width:100%;font-size:12px;"><thead><tr style="background:#0056b3;color:white"><th>Head</th><th>Major Head</th><th>Op.Bal</th><th>New Grant</th><th>Total</th><th>Exp</th><th>Balance</th><th>%Used</th></tr></thead><tbody>${rowsHTML}</tbody></table>`;
+        }
+
+        // Temporarily replace container with table for PDF
+        let container = document.getElementById(elementId);
+        let origContent = container.innerHTML;
+        titleEl.style.display = 'block';
+        // Add table inside
+        let tempDiv = document.createElement('div');
+        tempDiv.innerHTML = tableHtml;
+        container.appendChild(tempDiv);
+
+        showToast("📥 PDF ડાઉnload...");
+        var opt = {
+            margin: 0.4, filename: fname+'.pdf',
+            image: {type:'jpeg', quality:0.98},
+            html2canvas: {scale:2},
+            jsPDF: {unit:'in', format:'a4', orientation:'landscape'}
+        };
+        html2pdf().set(opt).from(container).save().then(() => {
+            titleEl.style.display = 'none';
+            container.innerHTML = origContent;
+        });
+    }
+</script>
+
+<!-- PWA Install Banner -->
+<div id="installBanner" style="display:none; position:fixed; bottom:80px; left:12px; right:12px; background:white; border-radius:14px; padding:14px 16px; box-shadow:0 4px 20px rgba(0,0,0,0.15); z-index:200; border:1px solid #e2e8f0;">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <img src="icons/icon-72.png" width="44" height="44" style="border-radius:10px;" alt="icon">
+    <div style="flex:1;">
+      <div style="font-size:14px; font-weight:700; color:#1e293b;">App Install કરો</div>
+      <div style="font-size:12px; color:#64748b;">Home Screen પર ઉમેરો - Offline પણ ચાલશે</div>
+    </div>
+    <button onclick="installApp()" style="background:#0056b3; color:white; border:none; border-radius:8px; padding:8px 14px; font-size:13px; font-weight:700; cursor:pointer;">Install</button>
+    <button onclick="dismissInstall()" style="background:none; border:none; font-size:18px; color:#94a3b8; cursor:pointer; padding:0 4px;">✕</button>
+  </div>
+</div>
+
+<script>
+// Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('[PWA] SW registered'))
+      .catch(err => console.log('[PWA] SW failed:', err));
+  });
+}
+
+// Install prompt
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); deferredPrompt = e;
+  setTimeout(() => {
+    if (!localStorage.getItem('icds_install_dismissed'))
+      document.getElementById('installBanner').style.display = 'block';
+  }, 2000);
+});
+function installApp() {
+  document.getElementById('installBanner').style.display = 'none';
+  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; }); }
+}
+function dismissInstall() {
+  document.getElementById('installBanner').style.display = 'none';
+  localStorage.setItem('icds_install_dismissed', '1');
+}
+window.addEventListener('appinstalled', () => { document.getElementById('installBanner').style.display = 'none'; });
+<\/script>
+</body>
+</html>
